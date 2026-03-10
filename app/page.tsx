@@ -1,7 +1,23 @@
+'use client';
 import TypewriterCity from "@/components/TypewriterCity";
 import { Input } from "@/components/ui/input";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const [search, setSearch] = useState('');
+  const router = useRouter();
+
+  const handleSearch = () => {
+    if (!search) return;
+    router.push(`/map?search=${encodeURIComponent(search)}`);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   return (
    <div className="flex w-full flex-col items-center justify-center p-4 h-screen">
@@ -16,7 +32,11 @@ export default function Home() {
           </div>
         </div>
         <div className="w-96">
-            <Input />
+            <Input 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleKeyPress}
+            />
         </div>
       </div>
     </div>
