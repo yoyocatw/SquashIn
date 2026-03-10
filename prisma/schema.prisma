@@ -14,3 +14,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Court {
+  id  String @id @default(cuid())
+  name String
+  slug  String  @unique
+  description String? @db.Text
+
+  address String
+  city  String
+  lat Float
+  lon Float
+
+  numOfCourts Int
+
+  access  AccessType  @default(UNKNOWN)
+
+  email String? 
+  phone String? 
+  website String? 
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+}
+enum AccessType {
+  UNKNOWN
+  PUBLIC
+  PRIVATE
+  MEMBERSHIP_REQUIRED
+  ONE_TIME_FEE
+}
