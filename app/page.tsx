@@ -2,6 +2,7 @@ import TypewriterCity from "@/components/TypewriterCity";
 import { Input } from "@/components/ui/input";
 
 export default function Home() {
+
   return (
    <div className="flex w-full flex-col items-center justify-center p-4 h-screen">
       <div className="flex w-full max-w-4xl flex-col items-center justify-center gap-6 ">
