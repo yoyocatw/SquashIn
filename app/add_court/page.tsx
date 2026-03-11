@@ -1,8 +1,11 @@
 "use client";
 
+import SubmitButton from '@/components/SubmitButton';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useState, useEffect, useRef, SubmitEvent } from "react";
+import slugify from 'slugify';
+
 
 
 export default function AddCourtForm() {
@@ -16,6 +19,10 @@ export default function AddCourtForm() {
     const [suggestions, setSuggestions] = useState<any[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
+    const [description, setDescription] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [website, setWebsite] = useState("");
 
     const mapRef = useRef<maplibregl.Map | null>(null);
     const mapContainer = useRef<HTMLDivElement | null>(null);
@@ -143,6 +150,9 @@ export default function AddCourtForm() {
 
         const res = await fetch("/api/courts", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify({
                 name,
                 address,
@@ -151,7 +161,11 @@ export default function AddCourtForm() {
                 lat,
                 lon,
                 access,
-                slug: name.toLowerCase().replace(/ /g, "-")
+                slug: slugify(name, { lower: true }),
+                description,
+                email,
+                phone,
+                website,
             }),
         });
 
@@ -286,6 +300,57 @@ export default function AddCourtForm() {
                 </div>
 
 
+                <div className="grid grid-cols-3 gap-10 border-b pb-10">
+                    <div>
+                        <h2 className="text-lg font-semibold">Details</h2>
+                        <p className="text-sm text-description mt-1">
+                            Optional additional information about the court.
+                        </p>
+                    </div>
+                    <div className="col-span-2 space-y-4">
+                        <div>
+                            <label className="text-sm font-semibold">Description</label>
+                            <textarea
+                                className="mt-2 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                rows={3}
+                                placeholder="Describe the facility, amenities, etc."
+                            />
+                        </div>
+                        <div>
+                            <label className="text-sm font-semibold">Email</label>
+                            <input
+                                type="email"
+                                className="mt-2 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="contact@example.com"
+                            />
+                        </div>
+                        <div>
+                            <label className="text-sm font-semibold">Phone</label>
+                            <input
+                                type="tel"
+                                className="mt-2 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                placeholder="(123) 456-7890"
+                            />
+                        </div>
+                        <div>
+                            <label className="text-sm font-semibold">Website</label>
+                            <input
+                                type="url"
+                                className="mt-2 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                value={website}
+                                onChange={(e) => setWebsite(e.target.value)}
+                                placeholder="https://example.com"
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-3 gap-10">
                     <div><h2 className="text-lg font-semibold">Access <span className='text-red-600'>*</span></h2></div>
                     <div className="col-span-2 flex gap-4">
@@ -294,26 +359,18 @@ export default function AddCourtForm() {
                             onChange={(e) => setAccess(e.target.value)}
                             className="border p-2 rounded-md">
 
-                            <option>Select Access</option>
-                            <option value="UNKNOWN">Select Access</option>
+                            <option value="" disabled>Select Access</option>
                             <option value="PUBLIC">Public</option>
                             <option value="PRIVATE">Private</option>
-                            <option value="MEMBERS_ONLY"> MEMBERSHIP_REQUIRED</option>
-                            <option value="ONE_TIME_FEE">ONE_TIME_FEE</option>
+                            <option value="MEMBERSHIP_REQUIRED">Membership Required</option>
+                            <option value="ONE_TIME_FEE">One-Time Fee</option>
 
                         </select>
 
                     </div>
                 </div>
 
-                <div className="pt-6">
-                    <button
-                        type="submit"
-                        className="bg-black text-white px-6 py-3 rounded-lg hover:opacity-90"
-                    >
-                        Submit Court
-                    </button>
-                </div>
+                <SubmitButton />
 
             </form>
         </div>

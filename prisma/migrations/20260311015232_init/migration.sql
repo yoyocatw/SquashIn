@@ -9,6 +9,8 @@ CREATE TABLE "Court" (
     "description" TEXT,
     "address" TEXT NOT NULL,
     "city" TEXT NOT NULL,
+    "lat" DOUBLE PRECISION NOT NULL,
+    "lon" DOUBLE PRECISION NOT NULL,
     "numOfCourts" INTEGER NOT NULL,
     "access" "AccessType" NOT NULL DEFAULT 'UNKNOWN',
     "email" TEXT,
