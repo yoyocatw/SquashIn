@@ -49,6 +49,8 @@ export default function Home() {
           </button>
         </div>
       </div>
+
+      <a href="/add_court">Add Court</a>
     </div>
   );
 }

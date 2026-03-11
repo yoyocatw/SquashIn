@@ -4,7 +4,7 @@ import CourtList from '@/components/CourtList';
 import { useSearchParams } from 'next/navigation';
 export default function Map() {
     const searchParams = useSearchParams();
-    const search = searchParams.get('squashin');
+    const search: string | null = searchParams.get('squashin');
 
 
 
@@ -17,7 +17,7 @@ export default function Map() {
             </div>
             <div className="flex-1">
                 <MapComponent 
-                    search={search || undefined}
+                    search={search}
                 />
             </div>
         </div>
