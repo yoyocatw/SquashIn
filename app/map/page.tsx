@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import MapClient from '@/components/MapClient';
+import MapClient from '@/components/map/MapClient';
 
 interface MapPageProps {
   searchParams: Promise<{
@@ -7,12 +7,10 @@ interface MapPageProps {
     swLng?: string;
     neLat?: string;
     neLng?: string;
-    squashin?: string;
   }>;
 }
 
 export default async function MapPage({ searchParams }: MapPageProps) {
-  // Await the promise to get the actual values
   const params = await searchParams;
   
   const { swLat, swLng, neLat, neLng } = params;

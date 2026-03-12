@@ -53,7 +53,7 @@ export default function AddCourtForm() {
 
         const map = new maplibregl.Map({
             container: mapContainer.current,
-            style: "https://tiles.stadiamaps.com/styles/alidade_smooth.json",
+            style: "https://tiles.openfreemap.org/styles/liberty",
             center: [-74.5, 40],
             zoom: 1
         });
@@ -201,7 +201,7 @@ export default function AddCourtForm() {
                     <div>
                         <h2 className="text-lg font-semibold">Location</h2>
                         <p className="text-sm text-description mt-1">
-                            The street address and city of the location. Used for directions.
+                            The street address and city of the location.
                         </p>
                     </div>
 
@@ -325,7 +325,6 @@ export default function AddCourtForm() {
                                 className="mt-2 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="contact@example.com"
                             />
                         </div>
                         <div>
@@ -335,7 +334,6 @@ export default function AddCourtForm() {
                                 className="mt-2 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
-                                placeholder="(123) 456-7890"
                             />
                         </div>
                         <div>
@@ -345,7 +343,6 @@ export default function AddCourtForm() {
                                 className="mt-2 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                 value={website}
                                 onChange={(e) => setWebsite(e.target.value)}
-                                placeholder="https://example.com"
                             />
                         </div>
                     </div>

@@ -47,10 +47,10 @@ export default function Home() {
           >
             <Search className="h-5 w-5" />
           </button>
+          
         </div>
+        <a href="/add_court" className="font-roboto underline text-sm">Add a Court</a>
       </div>
-
-      <a href="/add_court">Add Court</a>
     </div>
   );
 }
