@@ -1,24 +1,11 @@
-'use client';
-import TypewriterCity from "@/components/TypewriterCity";
-import { Input } from "@/components/ui/input";
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Search } from "lucide-react";
+import { createClient } from '@/lib/supabase/server'
+import Link from 'next/link'
+import TypewriterCity from "@/components/TypewriterCity"
+import SearchBar from '@/components/SearchBar'
 
-export default function Home() {
-  const [search, setSearch] = useState('');
-  const router = useRouter();
-
-  const handleSearch = () => {
-    if (!search) return;
-    router.push(`/map?squashin=${encodeURIComponent(search)}`);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
+export default async function Home() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
   return (
     <div className="flex w-full flex-col items-center justify-center p-4 h-screen">
@@ -32,23 +19,9 @@ export default function Home() {
             <TypewriterCity />
           </div>
         </div>
-        <div className="w-96 flex rounded-2xl border-2 border-muted-foreground focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all overflow-hidden">
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={handleKeyPress}
-            placeholder="Search courts..."
-            className="border-0 focus-visible:ring-0"
-          />
 
-          <button
-            onClick={handleSearch}
-            className="px-4 flex items-center justify-center text-white bg-primary hover:bg-primary/90 transition-colors cursor-pointer"
-          >
-            <Search className="h-5 w-5" />
-          </button>
-          
-        </div>
+        <SearchBar />
+        
         <a href="/add_court" className="font-roboto underline text-sm">Add a Court</a>
       </div>
     </div>

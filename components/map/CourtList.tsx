@@ -1,8 +1,20 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search } from "lucide-react";
+import { Search, House, UserStar } from "lucide-react";
 import Link from 'next/link';
+
+function formatAccess(access: string | null): string {
+    if (!access) return '';
+    const labels: Record<string, string> = {
+        PUBLIC: 'Public',
+        PRIVATE: 'Private',
+        MEMBERSHIP_REQUIRED: 'Membership Required',
+        ONE_TIME_FEE: 'One-Time Fee',
+        UNKNOWN: 'Unknown',
+    };
+    return labels[access] || access;
+}
 
 export default function CourtList({ courts }: { courts: any[] }) {
     const [search, setSearch] = useState('');
@@ -96,8 +108,15 @@ export default function CourtList({ courts }: { courts: any[] }) {
                             className="block p-4 mb-2 border rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
                         >
                             <h3 className="text-lg font-semibold">{court.name}</h3>
-                            <p className="text-sm text-gray-600">{court.numOfCourts} courts</p>
-                            <p className="text-sm text-gray-600">{court.access?.toLowerCase()}</p>
+                            <div className='flex items-center gap-2 mt-1'>  
+                                <House />
+                                <p className="text-sm ">{court.num_of_courts} courts</p>
+                            </div>
+                            <div className='flex items-center gap-2 mt-1'>
+                                <UserStar />
+                                <p className="text-sm">{formatAccess(court.access)}</p>
+                            </div>
+                            
                         </Link>
                     ))
                 )}

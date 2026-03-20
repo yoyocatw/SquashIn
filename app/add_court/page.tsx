@@ -8,6 +8,7 @@ import slugify from 'slugify';
 
 
 
+
 export default function AddCourtForm() {
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
@@ -172,8 +173,9 @@ export default function AddCourtForm() {
         const data = await res.json();
         if (res.ok) {
             alert("Court submitted successfully!");
+        } else {
+            alert(data.error || "Failed to submit court");
         }
-        console.log(data);
     }
 
     return (

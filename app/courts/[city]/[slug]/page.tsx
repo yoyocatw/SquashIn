@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import { House, UserStar, Phone, Mail, Link } from "lucide-react";
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -21,12 +21,15 @@ export default async function CourtPage({
 
     
     const { city, slug } = await params;
+    const supabase = await createClient();
 
-    const court = await prisma.court.findUnique({
-        where: { slug: slug }
-    });
+    const { data: court, error } = await supabase
+        .from('courts')
+        .select('*')
+        .eq('slug', slug)
+        .single();
 
-    if (!court) notFound();
+    if (error || !court) notFound();
 
     return (
         <div className='flex w-full h-screen'>
@@ -35,11 +38,11 @@ export default async function CourtPage({
                 <div className="mt-6 space-y-4 pl-2">
                     <div className='flex gap-2'>
                         <House />
-                        <p className='font-semibold'>{court.numOfCourts} squash courts</p>
+                        <p className='font-semibold'>{court.num_of_courts} squash courts</p>
                     </div>
                     <div className='flex gap-2'>
                         <UserStar />
-                        <p className='font-semibold'>{accessLabels[court.access]}</p>
+                        <p className='font-semibold'>{accessLabels[court.access] || 'Unknown'}</p>
                     </div>
                 </div>
                 <div>

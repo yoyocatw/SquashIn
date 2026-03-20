@@ -1,13 +1,13 @@
 'use client';
-
-import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { useState, SubmitEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function LoginForm() {
   const router = useRouter();
+  const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState('');
@@ -16,48 +16,42 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
     try {
       if (isRegistering) {
-        const res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password }),
-        });
-
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error || 'Registration failed');
-        }
-
-        const signInResult = await signIn('credentials', {
+        const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
-          redirect: false,
+          options: {
+            data: {
+              name,
+              clublocker_rating: null,
+              squashlevels_rating: null,
+            },
+          },
         });
 
-        if (signInResult?.error) {
-          throw new Error('Failed to sign in after registration');
+        if (signUpError) {
+          throw new Error(signUpError.message);
         }
 
-        router.push('/dashboard');
+        router.push('/');
         router.refresh();
       } else {
-        const result = await signIn('credentials', {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
-          redirect: false,
         });
 
-        if (result?.error) {
+        if (signInError) {
           throw new Error('Invalid email or password');
         }
 
-        router.push('/dashboard');
+        router.push('/');
         router.refresh();
       }
     } catch (err) {
@@ -67,8 +61,17 @@ export default function LoginForm() {
     }
   }
 
+  async function handleGoogleSignIn() {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${location.origin}/auth/callback`,
+      },
+    });
+  }
+
   return (
-    <div className="flex flex-col gap-6 rounded-lg border bg-white p-8 shadow-sm">
+    <div className="flex flex-col gap-6 rounded-lg border p-8 shadow-sm">
       <h1 className="text-2xl font-bold text-center">
         {isRegistering ? 'Create an account' : 'Welcome back'}
       </h1>
@@ -91,11 +94,11 @@ export default function LoginForm() {
         <div>
           <label htmlFor="email" className="text-sm font-medium">Email</label>
           <Input
+            className='rounded-md border'
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
             required
           />
         </div>
@@ -103,11 +106,11 @@ export default function LoginForm() {
         <div>
           <label htmlFor="password" className="text-sm font-medium">Password</label>
           <Input
+            className='border rounded-md'
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
             required
             minLength={6}
           />
@@ -117,7 +120,7 @@ export default function LoginForm() {
           <p className="text-sm text-red-500">{error}</p>
         )}
 
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} className='cursor-pointer'>
           {isLoading ? 'Loading...' : isRegistering ? 'Sign up' : 'Sign in'}
         </Button>
       </form>
@@ -133,6 +136,7 @@ export default function LoginForm() {
 
       <Button
         variant="outline"
+        className='cursor-pointer'
         onClick={() => {
           setIsRegistering(!isRegistering);
           setError('');
@@ -154,7 +158,8 @@ export default function LoginForm() {
 
           <Button
             variant="outline"
-            onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+            className='cursor-pointer'
+            onClick={handleGoogleSignIn}
           >
             Google
           </Button>

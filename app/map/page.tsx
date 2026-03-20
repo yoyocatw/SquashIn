@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 import MapClient from '@/components/map/MapClient';
 
 interface MapPageProps {
@@ -14,19 +14,22 @@ export default async function MapPage({ searchParams }: MapPageProps) {
   const params = await searchParams;
   
   const { swLat, swLng, neLat, neLng } = params;
-  const courts = await prisma.court.findMany({
-    where: swLat ? {
-      lat: { 
-        gte: parseFloat(swLat!), 
-        lte: parseFloat(neLat!) 
-      },
-      lon: { 
-        gte: parseFloat(swLng!), 
-        lte: parseFloat(neLng!) 
-      },
-    } : {},
-    orderBy: { createdAt: 'desc' },
-  });
+  const supabase = await createClient();
 
-  return <MapClient courts={courts} />;
+  let query = supabase
+    .from('courts')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (swLat && neLat && swLng && neLng) {
+    query = query
+      .gte('lat', parseFloat(swLat))
+      .lte('lat', parseFloat(neLat))
+      .gte('lon', parseFloat(swLng))
+      .lte('lon', parseFloat(neLng));
+  }
+
+  const { data: courts } = await query;
+
+  return <MapClient courts={courts || []} />;
 }

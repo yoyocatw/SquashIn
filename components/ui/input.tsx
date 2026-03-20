@@ -7,7 +7,6 @@ function Input({ className, ...props }: React.ComponentProps<"input">) {
       
       <input
         type="text"
-        placeholder="Search for courts"
         data-slot="input"
         className={cn(
           "h-16 w-full bg-transparent pl-4 pr-4 text-lg outline-none placeholder:text-black  placeholder:font-light disabled:opacity-50 disabled:cursor-not-allowed",
