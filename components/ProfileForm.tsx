@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import Swal from 'sweetalert2'
 
 interface ProfileFormProps {
   user: {
@@ -29,7 +30,6 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [loading, setLoading] = useState(false)
 
   const hasUnsavedChanges =
@@ -55,21 +55,42 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault()
     setLoading(true)
-    setMessage(null)
+
+    if (!name.trim()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Name is required',
+      })
+      setLoading(false)
+      return
+    }
 
     if (newPassword || currentPassword || confirmPassword) {
       if (!currentPassword) {
-        setMessage({ type: 'error', text: 'Current password is required to change password' })
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Current password is required to change password',
+        })
         setLoading(false)
         return
       }
       if (!newPassword) {
-        setMessage({ type: 'error', text: 'New password is required' })
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'New password is required',
+        })
         setLoading(false)
         return
       }
       if (newPassword !== confirmPassword) {
-        setMessage({ type: 'error', text: 'New passwords do not match' })
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'New passwords do not match',
+        })
         setLoading(false)
         return
       }
@@ -81,7 +102,11 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         password: currentPassword
       })
       if (verifyError) {
-        setMessage({ type: 'error', text: 'Current password is incorrect' })
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Current password is incorrect',
+        })
         setLoading(false)
         return
       }
@@ -96,7 +121,11 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     })
 
     if (metadataError) {
-      setMessage({ type: 'error', text: metadataError.message })
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: metadataError.message,
+      })
       setLoading(false)
       return
     }
@@ -106,13 +135,23 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         password: newPassword
       })
       if (passwordError) {
-        setMessage({ type: 'error', text: passwordError.message })
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: passwordError.message,
+        })
         setLoading(false)
         return
       }
     }
 
-    setMessage({ type: 'success', text: 'Profile updated successfully!' })
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'Profile updated successfully!',
+      confirmButtonColor: '#FF6F61',
+      confirmButtonText: 'Awesome!'
+    })
     setCurrentPassword('')
     setNewPassword('')
     setConfirmPassword('')
@@ -214,12 +253,6 @@ export default function ProfileForm({ user }: ProfileFormProps) {
             />
           </div>
         </div>
-
-        {message && (
-          <p className={`text-sm ${message.type === 'error' ? 'text-red-500' : 'text-green-500'}`}>
-            {message.text}
-          </p>
-        )}
 
         <Button type="submit" disabled={loading} className="w-full cursor-pointer">
           {loading ? 'Updating...' : 'Update Profile'}

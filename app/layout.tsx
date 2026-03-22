@@ -28,10 +28,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Script
-          src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"
-          strategy="beforeInteractive"
-        />
         <Nav />
         {children}
       </body>

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase';
-import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 export default function Nav() {
   const supabase = createClient();
@@ -27,7 +27,11 @@ export default function Nav() {
   return (
     <nav className="w-full p-4 bg-white border-b shadow-lg sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between">
-        <a href="/" className="text-xl font-bold text-gray-800 font-roboto">SquashHeads</a>
+        <div className="flex items-center gap-2">
+          <Image src="/marker.png" alt="SquashHeads Logo" width={32} height={32} className="inline-block" />
+          <a href="/" className="text-xl font-bold text-gray-800 font-roboto">SquashHeads</a>
+        </div>
+        
 
         {user ? (
           <div className="flex items-center gap-4">

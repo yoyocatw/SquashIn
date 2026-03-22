@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import ProfileForm from '@/components/ProfileForm'
+import SavedCourts from '@/components/profile/SavedCourts'
 export default async function ProfilePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -19,6 +20,10 @@ export default async function ProfilePage() {
       <h1 className="text-3xl font-bold mb-8">Your Profile</h1>
       <ProfileForm user={user} />
       
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Saved Courts</h2>
+        <SavedCourts userId={user.id} />
+      </div>
     </div>
   )
 }

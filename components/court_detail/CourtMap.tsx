@@ -5,20 +5,21 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 export default function CourtMap({ court }: { court: any }) {
     const mapContainerRef = useRef<HTMLDivElement>(null);
+    const mapRef = useRef<maplibregl.Map | null>(null);
     const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=(${encodeURIComponent(court.name)})`;
     useEffect(() => {
-        if (!mapContainerRef.current || !court) return;
-
+        if (!mapContainerRef.current || !court || mapRef.current) return;
         const map = new maplibregl.Map({
             container: mapContainerRef.current,
             style: 'https://tiles.openfreemap.org/styles/liberty',
-            center: [court.lon, court.lat],
+            center: [Number(court.lon), Number(court.lat)],
             zoom: 15,
-            interactive: false, 
+            interactive: false,
             attributionControl: false
         });
+        mapRef.current = map;
 
-       const el = document.createElement('div');
+        const el = document.createElement('div');
         el.className = 'custom-marker';
         el.style.backgroundImage = 'url(/marker.png)';
         el.style.width = '35px';
@@ -35,19 +36,20 @@ export default function CourtMap({ court }: { court: any }) {
             )
             .addTo(map);
 
-        // Add navigation controls (zoom +/-)
         map.addControl(new maplibregl.NavigationControl(), 'top-right');
-
-        return () => map.remove();
+        return () => {
+            map.remove();
+            mapRef.current = null;
+        };
     }, [court]);
 
     return (
         <div className="w-full max-w-lg mx-auto">
-            <a 
+            <a
                 href={googleMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"   >
-                <div ref={mapContainerRef} className="w-full h-75 pointer-events-none"/>
+                <div ref={mapContainerRef} className="w-full h-75 pointer-events-none" />
             </a>
         </div>
     );

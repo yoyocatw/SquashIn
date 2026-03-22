@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
-import { House, UserStar, Phone, Mail, Link } from "lucide-react";
+import { House, UserStar, Phone, Mail, Link, Heart } from "lucide-react";
 import 'maplibre-gl/dist/maplibre-gl.css';
 import CourtMap from '@/components/court_detail/CourtMap';
+import FollowButton from '@/components/court_detail/FollowButton';
 
 
 const accessLabels: Record<string, string> = {
@@ -23,6 +24,8 @@ export default async function CourtPage({
     const { city, slug } = await params;
     const supabase = await createClient();
 
+    const { data: { user } } = await supabase.auth.getUser();
+
     const { data: court, error } = await supabase
         .from('courts')
         .select('*')
@@ -31,10 +34,18 @@ export default async function CourtPage({
 
     if (error || !court) notFound();
 
+    const { count: followerCount } = await supabase
+        .from('saved_courts')
+        .select('*', { count: 'exact', head: true })
+        .eq('court_id', court.id);
+
     return (
         <div className='flex w-full h-screen'>
             <div className="w-2/3 p-8 flex flex-col items-start">
-                <h1 className="text-4xl font-bold">{court.name}</h1>
+                <div className='flex items-center gap-4 w-full'>
+                    <h1 className="text-4xl font-bold">{court.name}</h1>
+                    {user && <FollowButton courtId={court.id} userId={user.id} />}
+                </div>
                 <div className="mt-6 space-y-4 pl-2">
                     <div className='flex gap-2'>
                         <House />
@@ -43,6 +54,10 @@ export default async function CourtPage({
                     <div className='flex gap-2'>
                         <UserStar />
                         <p className='font-semibold'>{accessLabels[court.access] || 'Unknown'}</p>
+                    </div>
+                    <div className='flex gap-2'>
+                        <Heart />
+                        <p className='font-semibold'>{followerCount || 0} followers</p>
                     </div>
                 </div>
                 <div>

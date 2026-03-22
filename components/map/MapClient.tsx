@@ -3,9 +3,8 @@ import MapComponent from '@/components/map/Map';
 import CourtList from '@/components/map/CourtList';
 import { useSearchParams } from 'next/navigation';
 
-export default function MapClient({ courts }: { courts: any[] }) {
+export default function MapClient({ courts, search }: { courts: any[]; search: string | null }) {
     const searchParams = useSearchParams();
-    const search = searchParams.get('squashin');
 
     return (
         <div className='flex h-screen w-full'>
