@@ -50,7 +50,7 @@ export default function Map({
         map.on('moveend', handleMoveEnd);
 
         return () => {
-            map.off('moveend', handleMoveEnd); 
+            map.off('moveend', handleMoveEnd);
             map.remove();
             mapRef.current = null;
         };
@@ -70,20 +70,43 @@ export default function Map({
 
             if (isNaN(lon) || isNaN(lat)) return;
 
+            
+            const popup = new maplibregl.Popup({
+                closeButton: false,
+                closeOnClick: true, // Let users tap the map to close the popup
+                offset: 15
+            }).setHTML(`
+    <div style="padding: 8px; font-family: sans-serif; min-width: 120px;">
+        <strong style="display:block; font-size: 14px;">${court.name}</strong>
+        <span style="color: #666; font-size: 12px;">${court.num_of_courts} Courts</span>
+    </div>
+`);
+
             const markerElement = document.createElement('div');
             markerElement.className = 'cursor-pointer';
-            markerElement.innerHTML =
-                `<img src="/marker.png" style="width:30px;height:30px;" />`;
+            markerElement.innerHTML = `<img src="/marker.png" style="width:30px;height:30px;" />`;
+            markerElement.addEventListener('mouseenter', () => {
+                if (window.matchMedia("(pointer: fine)").matches) {
+                    popup.setLngLat([lon, lat]).addTo(map);
+                }
+            });
+            markerElement.addEventListener('mouseleave', () => {
+                if (window.matchMedia("(pointer: fine)").matches) {
+                    popup.remove();
+                }
+            });
+            markerElement.addEventListener('click', (e) => {
+                e.stopPropagation(); 
 
+                if (popup.isOpen()) {
+                    router.push(`/courts/${court.city}/${court.slug}`);
+                } else {
+                    popup.setLngLat([lon, lat]).addTo(map);
+                }
+            });
             const marker = new maplibregl.Marker({ element: markerElement })
                 .setLngLat([lon, lat])
-                .setPopup(
-                    new maplibregl.Popup().setHTML(
-                        `<h3>${court.name}</h3><p>${court.address}, ${court.city}</p>`
-                    )
-                )
                 .addTo(map);
-
             markersRef.current.push(marker);
         });
     }, [courts, isLoaded]);
