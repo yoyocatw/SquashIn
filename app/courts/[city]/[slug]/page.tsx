@@ -1,9 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
-import { House, UserStar, Phone, Mail, Link, Heart } from "lucide-react";
+import { House, UserStar, Phone, Mail, Link } from "lucide-react";
 import 'maplibre-gl/dist/maplibre-gl.css';
 import CourtMap from '@/components/court_detail/CourtMap';
 import FollowButton from '@/components/court_detail/FollowButton';
+import FollowerCount from '@/components/court_detail/FollowerCount';
 
 
 const accessLabels: Record<string, string> = {
@@ -55,10 +56,7 @@ export default async function CourtPage({
                         <UserStar />
                         <p className='font-semibold'>{accessLabels[court.access] || 'Unknown'}</p>
                     </div>
-                    <div className='flex gap-2'>
-                        <Heart />
-                        <p className='font-semibold'>{followerCount || 0} followers</p>
-                    </div>
+                    <FollowerCount courtId={court.id} initialCount={followerCount || 0} />
                 </div>
                 <div>
                     <p className="mt-6 text-gray-600">{court.description}</p>

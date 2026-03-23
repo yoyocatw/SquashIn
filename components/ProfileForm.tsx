@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Swal from 'sweetalert2'
+import SavedCourts from './profile/SavedCourts'
 
 interface ProfileFormProps {
   user: {
@@ -258,6 +259,12 @@ export default function ProfileForm({ user }: ProfileFormProps) {
           {loading ? 'Updating...' : 'Update Profile'}
         </Button>
       </form>
+
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Saved Courts</h2>
+        <SavedCourts userId={user.id} />
+      </div>
+      
       <div className='mt-4'>
         <Button className='underline bg-transparent text-black cursor-pointer hover:text-primary' onClick={handleSignOut}>Sign Out</Button>
       </div>

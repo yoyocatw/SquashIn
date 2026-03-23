@@ -39,7 +39,7 @@ export default function LoginForm() {
           throw new Error(signUpError.message);
         }
 
-        router.push('/');
+        router.push('/confirm_signup');
         router.refresh();
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -81,11 +81,11 @@ export default function LoginForm() {
           <div>
             <label htmlFor="name" className="text-sm font-medium">Name</label>
             <Input
+              className='rounded-md border'
               id="name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Your name"
               required
             />
           </div>
