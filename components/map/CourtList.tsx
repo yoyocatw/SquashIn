@@ -1,8 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, House, UserStar } from "lucide-react";
+import { Search, House, UserStar} from "lucide-react";
 import Link from 'next/link';
+import { Badge } from "@/components/ui/badge"
 
 function formatAccess(access: string | null): string {
     if (!access) return '';
@@ -92,6 +93,7 @@ export default function CourtList({ courts }: { courts: any[] }) {
                             >
                                 {city.properties.name}, {city.properties.country}
                             </div>
+
                         ))}
                     </div>
                 )}
@@ -107,8 +109,20 @@ export default function CourtList({ courts }: { courts: any[] }) {
                             key={court.id}
                             className="block p-4 mb-2 border rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
                         >
-                            <h3 className="text-lg font-semibold">{court.name}</h3>
-                            <div className='flex items-center gap-2 mt-1'>  
+                            <h3 className="text-lg font-semibold">
+                                {court.name}
+                                {court.status === 'Unverified' && (
+                                    <Badge variant="destructive" className="ml-2">
+                                        Unverified
+                                    </Badge>
+                                )}
+                                {court.status === 'Verified' && (
+                                    <Badge variant="success" className="ml-2">
+                                        Verified
+                                    </Badge>
+                                )}
+                            </h3>
+                            <div className='flex items-center gap-2 mt-1'>
                                 <House />
                                 <p className="text-sm ">{court.num_of_courts} courts</p>
                             </div>
@@ -116,7 +130,7 @@ export default function CourtList({ courts }: { courts: any[] }) {
                                 <UserStar />
                                 <p className="text-sm">{formatAccess(court.access)}</p>
                             </div>
-                            
+
                         </Link>
                     ))
                 )}

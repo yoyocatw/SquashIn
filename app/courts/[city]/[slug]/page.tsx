@@ -1,11 +1,14 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
-import { House, UserStar, Phone, Mail, Link } from "lucide-react";
+import { House, UserStar, Phone, Mail, Link, Verified } from "lucide-react";
 import 'maplibre-gl/dist/maplibre-gl.css';
 import CourtMap from '@/components/court_detail/CourtMap';
 import FollowButton from '@/components/court_detail/FollowButton';
 import FollowerCount from '@/components/court_detail/FollowerCount';
-
+import CourtFollowers from '@/components/court_detail/CourtFollowers';
+import {Badge} from "@/components/ui/badge"
+import VerifiedBadge from '@/components/VerifiedBadge';
+import UnVerifiedBadge from '@/components/UnverifiedBadge';
 
 const accessLabels: Record<string, string> = {
     PUBLIC: 'Public Access',
@@ -40,12 +43,25 @@ export default async function CourtPage({
         .select('*', { count: 'exact', head: true })
         .eq('court_id', court.id);
 
+    const { data: savedCourts } = await supabase
+        .from('saved_courts')
+        .select('user_id')
+        .eq('court_id', court.id);
+
+    const userIds = savedCourts?.map(sc => sc.user_id) || [];
+
     return (
         <div className='flex w-full h-screen'>
             <div className="w-2/3 p-8 flex flex-col items-start">
                 <div className='flex items-center gap-4 w-full'>
                     <h1 className="text-4xl font-bold">{court.name}</h1>
                     {user && <FollowButton courtId={court.id} userId={user.id} />}
+                    {court.status === 'Unverified' && (
+                        <UnVerifiedBadge />
+                    )}
+                    {court.status === 'Verified' && (
+                        <VerifiedBadge />
+                    )}
                 </div>
                 <div className="mt-6 space-y-4 pl-2">
                     <div className='flex gap-2'>
@@ -57,10 +73,12 @@ export default async function CourtPage({
                         <p className='font-semibold'>{accessLabels[court.access] || 'Unknown'}</p>
                     </div>
                     <FollowerCount courtId={court.id} initialCount={followerCount || 0} />
+                    
                 </div>
                 <div>
                     <p className="mt-6 text-gray-600">{court.description}</p>
                 </div>
+                <CourtFollowers courtId={court.id} initialCount={followerCount || 0} />
             </div>
             <div className='w-1/3 p-8 border-l'>
                 <CourtMap court={court} />

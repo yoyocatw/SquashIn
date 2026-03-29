@@ -3,6 +3,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { Badge } from "@/components/ui/badge"
 
 export default function Map({
     search,
@@ -73,12 +74,13 @@ export default function Map({
             
             const popup = new maplibregl.Popup({
                 closeButton: false,
-                closeOnClick: true, // Let users tap the map to close the popup
+                closeOnClick: true, 
                 offset: 15
             }).setHTML(`
     <div style="padding: 8px; font-family: sans-serif; min-width: 120px;">
         <strong style="display:block; font-size: 14px;">${court.name}</strong>
         <span style="color: #666; font-size: 12px;">${court.num_of_courts} Courts</span>
+        <div>${court.status === 'Unverified' ? `<span style="color: red;">Unverified</span>` : `<span style="color: green;">Verified</span>`}</div>
     </div>
 `);
 
